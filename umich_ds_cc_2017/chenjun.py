@@ -62,6 +62,43 @@ def data_preprocess(directory):
 	label = np.asarray(label)
 	return [feature, name, label]
 
+def data_preprocess2(directory):
+	data = []
+	feature = []
+	name = []
+	label = []
+	length = 5000 # number of feature
+	label_name = []
+	freq = []
+	# parse input
+	for file in glob.glob(directory+"*.wav"):
+		# pick the minimum length audio file as the number of feature
+		#length = min(len(wavfile.read(file)[1]),length)
+		freq.append(wavfile.read(file)[0])
+		# get the name of each label
+		label_name.append(str(file)[12:-8])
+		# get the name of each audio file
+		name.append(str(file)[12:])
+
+	for file in glob.glob(directory+"*.wav"):
+		# read audio data into numpy.array
+		data.append(wavfile.read(file)[1][:length])
+
+	# convert list into flaot numpy.array
+	data = np.asarray(data)
+	data = data.astype(float)
+	
+	# normalize feature vector	
+	for i in range(0,len(feature)):
+		data[i] = data[i]/np.linalg.norm(data[i])
+
+	#  generate feature vector
+	for i in range(0,len(data)):
+		feature.append(mfcc(data[i],freq[i]).reshape(-1))
+
+	feature = np.asarray(feature)
+	return [feature, name]
+
 def train(data, label):
 	clf = KNeighborsClassifier(10)
 	clf.fit(data,label)
@@ -70,7 +107,7 @@ def train(data, label):
 	score = cross_val_score(clf,data,label,cv=5)
 	return clf
 
-def test(clf,data,label):
+def test(clf,data,label=None):
 	output = []
 	for i in range(0,len(data)):
 		pred = clf.predict([data[i]])
@@ -91,10 +128,10 @@ def format_output(name, pred):
 
 if __name__ == '__main__':
 	[train_data, train_name, train_label] = data_preprocess("./train_data/")
-	[test_data, test_name, test_label] = data_preprocess("./test_data/")
+	[test_data, test_name] = data_preprocess2("./test_data/")
 
 	clf = train(train_data,train_label)
-	pred = test(clf,test_data,test_label)
+	pred = test(clf,test_data)
 
 	format_output(test_name, pred);
 	#print pred
