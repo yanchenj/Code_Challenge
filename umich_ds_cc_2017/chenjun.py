@@ -1,12 +1,9 @@
 from scipy.io import wavfile
 import glob
 import numpy as np
-from sklearn import svm
-import matplotlib.pyplot as plt
-import math
 from python_speech_features import mfcc
-from sklearn.model_selection import cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
+
 dict = {}
 dict_rev = {}
 
