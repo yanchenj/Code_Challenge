@@ -20,8 +20,6 @@ def data_preprocess(directory):
 	freq = []
 	# parse input
 	for file in glob.glob(directory+"*.wav"):
-		# pick the minimum length audio file as the number of feature
-		#length = min(len(wavfile.read(file)[1]),length)
 		freq.append(wavfile.read(file)[0])
 		# get the name of each label
 		label_name.append(str(file)[13:-7])
@@ -53,11 +51,6 @@ def data_preprocess(directory):
 	for i in range(0,len(data)):
 		feature.append(mfcc(data[i],freq[i]).reshape(-1))
 
-	#plt.plot(feature[0])
-	#plt.show()
-	#plt.plot(data[0])
-	#plt.show()
-
 	feature = np.asarray(feature)
 	label = np.asarray(label)
 	return [feature, name, label]
@@ -66,17 +59,11 @@ def data_preprocess2(directory):
 	data = []
 	feature = []
 	name = []
-	label = []
 	length = 5000 # number of feature
-	label_name = []
 	freq = []
 	# parse input
 	for file in glob.glob(directory+"*.wav"):
-		# pick the minimum length audio file as the number of feature
-		#length = min(len(wavfile.read(file)[1]),length)
 		freq.append(wavfile.read(file)[0])
-		# get the name of each label
-		label_name.append(str(file)[12:-8])
 		# get the name of each audio file
 		name.append(str(file)[12:])
 
@@ -102,9 +89,6 @@ def data_preprocess2(directory):
 def train(data, label):
 	clf = KNeighborsClassifier(10)
 	clf.fit(data,label)
-	# clf = svm.SVC(decision_function_shape='ovo')
-	# clf.fit(data,label)
-	score = cross_val_score(clf,data,label,cv=5)
 	return clf
 
 def test(clf,data,label=None):
@@ -112,12 +96,13 @@ def test(clf,data,label=None):
 	for i in range(0,len(data)):
 		pred = clf.predict([data[i]])
 		output.append(dict_rev[pred[0]])
-	# correct = 0;
-	# for i in range(0,len(label)):
-	# 	print(dict[output[i]],label[i])
-	# 	if label[i] == dict[output[i]]:
-	# 		correct +=1
-	# print("accuracy is {} \n".format(float(correct)/len(output)))
+	if label != None:
+		correct = 0;
+		for i in range(0,len(label)):
+			print(dict[output[i]],label[i])
+			if label[i] == dict[output[i]]:
+				correct +=1
+		print("accuracy is {} \n".format(float(correct)/len(output)))
 	return output
 
 def format_output(name, pred):
@@ -134,4 +119,3 @@ if __name__ == '__main__':
 	pred = test(clf,test_data)
 
 	format_output(test_name, pred);
-	#print pred
