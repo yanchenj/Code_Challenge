@@ -11,13 +11,7 @@ dict = {}
 dict_rev = {}
 
 def data_preprocess(directory):
-	data = []
-	feature = []
-	name = []
-	label = []
-	length = 5000 # number of feature
-	label_name = []
-	freq = []
+	data,feature,name,label,label_name,freq,length = [],[],[],[],[],[],5000
 	# parse input
 	for file in glob.glob(directory+"*.wav"):
 		freq.append(wavfile.read(file)[0])
@@ -42,8 +36,7 @@ def data_preprocess(directory):
 	# convert list into flaot numpy.array
 	data = np.asarray(data)
 	data = data.astype(float)
-	
-	# normalize feature vector	
+	# normalize data vector	
 	for i in range(0,len(feature)):
 		data[i] = data[i]/np.linalg.norm(data[i])
 
@@ -56,11 +49,8 @@ def data_preprocess(directory):
 	return [feature, name, label]
 
 def data_preprocess2(directory):
-	data = []
-	feature = []
-	name = []
-	length = 5000 # number of feature
-	freq = []
+	data,feature,name,freq,length = [],[],[],[],5000
+
 	# parse input
 	for file in glob.glob(directory+"*.wav"):
 		freq.append(wavfile.read(file)[0])
@@ -75,7 +65,7 @@ def data_preprocess2(directory):
 	data = np.asarray(data)
 	data = data.astype(float)
 	
-	# normalize feature vector	
+	# normalize data vector	
 	for i in range(0,len(feature)):
 		data[i] = data[i]/np.linalg.norm(data[i])
 
